@@ -804,6 +804,7 @@ type tagCount struct {
 
 func Serve(addr string) error {
 	mux := http.NewServeMux()
+	registerMCPRoutes(mux)
 	mux.HandleFunc("/", handleGames)
 	mux.HandleFunc("/tags", handleTags)
 	mux.HandleFunc("/game/", handleGame)
