@@ -1,7 +1,0 @@
-# gomarkdoc configuration
-# Generates API reference markdown into site/content/api/
-output: site/content/api/{{.Dir}}/index.md
-repository:
-  url: https://github.com/b4ux1t3/infrastructure
-  default-branch: main
-  path: /rom-tagger

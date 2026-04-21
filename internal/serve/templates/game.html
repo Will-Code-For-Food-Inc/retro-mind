@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{.Game.Name}} — rom-tagger</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: monospace; background: #111; color: #ddd; margin: 0; }
+  /* ── sticky header ── */
+  #site-header {
+    position: fixed; top: 0; left: 0; right: 0; height: 42px; z-index: 50;
+    background: #161622; border-bottom: 1px solid #2a2a40;
+    display: flex; align-items: center; padding: 0 1.2rem; gap: 1.4rem;
+  }
+  #site-header .logo { color: #adf; font-weight: bold; font-size: .9rem; text-decoration: none; letter-spacing: .03em; }
+  #site-header nav { display: flex; gap: 1.2rem; }
+  #site-header nav a { color: #778; font-size: .82rem; text-decoration: none; }
+  #site-header nav a:hover { color: #adf; }
+  #site-header nav a.active { color: #adf; }
+  .page { max-width: 900px; margin: 0 auto; padding: 4rem 1rem 2rem; }
+  h1 { color: #fff; margin-bottom: .25rem; font-size: 1.3rem; }
+  .meta { color: #888; font-size: .85rem; margin-bottom: 1.5rem; }
+  .section { margin-bottom: 1.5rem; }
+  .section h2 { color: #aaa; font-size: .9rem; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #333; padding-bottom: .25rem; margin-bottom: .75rem; }
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .tag { background: #222; border: 1px solid #444; border-radius: 3px; padding: .2rem .5rem; font-size: .85rem; }
+  .tag a { color: #adf; text-decoration: none; }
+  .rawg-tag { background: #1a1a2e; border: 1px solid #333; }
+  .rawg-tag span { color: #99a; }
+  .description { line-height: 1.6; color: #ccc; white-space: pre-wrap; }
+  .not-found { color: #666; font-style: italic; }
+  .scores { display: flex; gap: 2rem; margin-bottom: .5rem; }
+  .score-box { background: #1a1a2e; border: 1px solid #333; padding: .4rem .8rem; border-radius: 3px; }
+  .score-box .label { font-size: .75rem; color: #666; }
+  .score-box .value { font-size: 1.2rem; color: #adf; }
+  .hero { width: 100%; max-height: 300px; object-fit: cover; border-radius: 4px; margin-bottom: 1.5rem; }
+  footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #333; font-size: .8rem; }
+  footer a { color: #555; }
+</style>
+</head>
+<body>
+<header id="site-header">
+  <a class="logo" href="/">rom-tagger</a>
+  <nav>
+    <a href="/">games</a>
+    <a href="/tags">tags</a>
+    <a href="/viz">viz</a>
+    <a href="/views">saved views</a>
+  </nav>
+</header>
+<div class="page">
+{{if and .ShowArt .Meta .Meta.BackgroundImage}}<img class="hero" src="{{.Meta.BackgroundImage}}" alt="{{.Game.Name}}">{{end}}
+<h1>{{.Game.Name}}</h1>
+<p class="meta">{{.Game.Platform}}{{if .Meta.Released}} &mdash; released {{.Meta.Released}}{{end}}</p>
+
+<div class="section">
+  <h2>Vibe Tags</h2>
+  {{if .Game.Tags}}
+  <div class="tag-cloud">
+    {{range .Game.Tags}}<span class="tag"><a href="/?tag={{.}}">{{.}}</a></span>{{end}}
+  </div>
+  {{else}}<p class="not-found">No vibe tags yet.</p>{{end}}
+</div>
+
+{{if .Meta}}
+  {{if .Meta.NotFound}}
+    <p class="not-found">No RAWG metadata found for this game.</p>
+  {{else}}
+    {{if .Meta.Metacritic}}
+    <div class="section">
+      <h2>Scores</h2>
+      <div class="scores">
+        <div class="score-box"><div class="label">Metacritic</div><div class="value">{{.Meta.Metacritic}}</div></div>
+      </div>
+    </div>
+    {{end}}
+    {{if .Meta.Description}}
+    <div class="section">
+      <h2>Description</h2>
+      <p class="description">{{.Meta.Description}}</p>
+    </div>
+    {{end}}
+    {{if .Meta.Tags}}
+    <div class="section">
+      <h2>RAWG Community Tags</h2>
+      <div class="tag-cloud">
+        {{range .Meta.Tags}}<span class="tag rawg-tag"><span>{{.Name}}</span></span>{{end}}
+      </div>
+    </div>
+    {{end}}
+  {{end}}
+{{end}}
+
+<footer><a href="/about">about this library</a></footer>
+</div>
+</body>
+</html>

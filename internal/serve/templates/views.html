@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>saved views — rom-tagger</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: monospace; background: #111; color: #ddd; margin: 0; }
+  /* ── sticky header ── */
+  #site-header {
+    position: fixed; top: 0; left: 0; right: 0; height: 42px; z-index: 50;
+    background: #161622; border-bottom: 1px solid #2a2a40;
+    display: flex; align-items: center; padding: 0 1.2rem; gap: 1.4rem;
+  }
+  #site-header .logo { color: #adf; font-weight: bold; font-size: .9rem; text-decoration: none; letter-spacing: .03em; }
+  #site-header nav { display: flex; gap: 1.2rem; }
+  #site-header nav a { color: #778; font-size: .82rem; text-decoration: none; }
+  #site-header nav a:hover { color: #adf; }
+  #site-header nav a.active { color: #adf; }
+  .page { max-width: 900px; margin: 0 auto; padding: 4rem 1rem 2rem; }
+  h1 { color: #fff; font-size: 1.1rem; margin-bottom: 1.2rem; }
+  .view-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+  .view-card {
+    background: #1a1a2e; border: 1px solid #2a2a40; border-radius: 4px;
+    padding: .8rem 1rem; text-decoration: none; display: block;
+    transition: border-color .15s;
+  }
+  .view-card:hover { border-color: #7af; }
+  .view-card .vname { color: #adf; font-size: .95rem; margin-bottom: .4rem; }
+  .view-card .vaxes { color: #778; font-size: .8rem; }
+  .view-card .vaxes span { color: #99b; }
+  .view-card .vdate { color: #445; font-size: .72rem; margin-top: .5rem; }
+  .empty { color: #555; font-style: italic; margin-top: 2rem; }
+  footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #333; font-size: .8rem; }
+  footer a { color: #555; }
+</style>
+</head>
+<body>
+<header id="site-header">
+  <a class="logo" href="/">rom-tagger</a>
+  <nav>
+    <a href="/">games</a>
+    <a href="/tags">tags</a>
+    <a href="/viz">viz</a>
+    <a href="/views" class="active">saved views</a>
+  </nav>
+</header>
+<div class="page">
+<h1>saved views</h1>
+{{if .}}
+<div class="view-grid">
+  {{range .}}
+  <a class="view-card" href="/viz?x={{.XTag | urlquery}}&y={{.YTag | urlquery}}{{if .PlatformsJSON}}&platforms={{.PlatformsJSON | urlquery}}{{end}}">
+    <div class="vname">{{.Name}}</div>
+    <div class="vaxes">x: <span>{{.XTag}}</span> &nbsp; y: <span>{{.YTag}}</span></div>
+    <div class="vdate">{{.CreatedAt}}</div>
+  </a>
+  {{end}}
+</div>
+{{else}}
+<p class="empty">No saved views yet — head to the <a href="/viz" style="color:#7af">viz</a> and save one.</p>
+{{end}}
+<footer><a href="/about">about this library</a></footer>
+</div>
+</body>
+</html>
