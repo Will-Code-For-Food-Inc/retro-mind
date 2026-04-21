@@ -1,0 +1,17 @@
+# Compiled binaries
+build/
+rom-tagger
+rom-tagger-slim
+rom-tagger-agent
+cmd/tui/rom-tagger-tui
+cmd/tui/rom-tagger-tui-agent
+
+# Keys & certs
+*.pem
+*.gpg
+
+# Temp files
+tmp.*
+
+# Environment
+.env

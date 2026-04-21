@@ -1,0 +1,26 @@
+baseURL = "/"
+title = "rom-tagger"
+theme = "hugo-book"
+languageCode = "en-us"
+
+# Book theme settings
+[params]
+  BookTheme = "auto"
+  BookToC = true
+  BookSearch = true
+  BookRepo = "https://github.com/b4ux1t3/infrastructure"
+  BookMenuBundle = false
+  BookSection = "docs"
+
+[menu]
+  [[menu.after]]
+    name = "GitHub"
+    url = "https://github.com/b4ux1t3/infrastructure"
+    weight = 10
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[module]
+  [[module.imports]]
+    path = "github.com/alex-shpak/hugo-book"
