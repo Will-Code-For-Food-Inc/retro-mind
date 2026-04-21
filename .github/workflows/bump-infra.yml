@@ -1,0 +1,53 @@
+name: Bump infra
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Check out infrastructure repo
+        uses: actions/checkout@v4
+        with:
+          repository: b4ux1t3/infrastructure
+          token: ${{ secrets.INFRA_PAT }}
+
+      - name: Compute new fetchFromGitHub hash
+        id: prefetch
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          RESULT=$(nix run nixpkgs#nix-prefetch-github -- Will-Code-For-Food-Inc retro-mind --rev "$TAG")
+          HASH=$(echo "$RESULT" | jq -r '.hash')
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+
+      - name: Update nix/nix/rom-tagger.nix
+        run: |
+          TAG="${{ steps.prefetch.outputs.tag }}"
+          HASH="${{ steps.prefetch.outputs.hash }}"
+          sed -i "s|rev = \".*\";|rev = \"$TAG\";|" nix/nix/rom-tagger.nix
+          sed -i "s|hash = \"sha256-.*\";|hash = \"$HASH\";|" nix/nix/rom-tagger.nix
+
+      - name: Open PR
+        run: |
+          TAG="${{ steps.prefetch.outputs.tag }}"
+          BRANCH="nix/retro-mind-${TAG}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add nix/nix/rom-tagger.nix
+          git commit -m "nix: bump retro-mind to ${TAG}"
+          git push origin "$BRANCH"
+          gh pr create \
+            --repo b4ux1t3/infrastructure \
+            --title "nix: bump retro-mind to ${TAG}" \
+            --body "Automated bump of \`fetchFromGitHub\` rev and hash in \`nix/nix/rom-tagger.nix\` for retro-mind ${TAG}." \
+            --base main \
+            --head "$BRANCH"
+        env:
+          GH_TOKEN: ${{ secrets.INFRA_PAT }}

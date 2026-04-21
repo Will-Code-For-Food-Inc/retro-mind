@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build MCP server (slim)
+        run: |
+          GOOS=linux GOARCH=${{ matrix.arch }} CGO_ENABLED=0 \
+            go build -tags slim -o rom-tagger-mcp-linux-${{ matrix.arch }} .
+
+      - name: Build TUI
+        run: |
+          GOOS=linux GOARCH=${{ matrix.arch }} CGO_ENABLED=0 \
+            go build -o rom-tagger-tui-linux-${{ matrix.arch }} ./cmd/tui
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binaries-${{ matrix.arch }}
+          path: |
+            rom-tagger-mcp-linux-${{ matrix.arch }}
+            rom-tagger-tui-linux-${{ matrix.arch }}
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: binaries-*
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            rom-tagger-mcp-linux-amd64
+            rom-tagger-mcp-linux-arm64
+            rom-tagger-tui-linux-amd64
+            rom-tagger-tui-linux-arm64
+          generate_release_notes: true
